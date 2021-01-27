@@ -1,5 +1,7 @@
 # Copyright (c) 2020 - Valentin Schmidt
-#
+# valentinsch@gmail.com
+# https://github.com/tinoargentino/
+
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -20,7 +22,6 @@
 
 import json
 import os
-#import os.path
 from slack import WebClient
 from slack.errors import SlackApiError
 import base64
@@ -28,47 +29,31 @@ from urllib.parse import parse_qs
 from urllib.parse import unquote
 import time as tm
 
-#from urllib2 import build_opener, HTTPHandler, Request
-#from urllib import request
 import requests
 
-#import pickle
-#from googleapiclient.discovery import build
-#from google_auth_oauthlib.flow import InstalledAppFlow
-#from google.auth.transport.requests import Request
 from datetime import datetime
-#from oauth2client.service_account import ServiceAccountCredentials
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 
 def lambda_handler(event, context):
     scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scopes=scope)
-    #gc = gspread.service_account(credentials)
 
-
-    #Test curl
-    # curl -d '{"type":"valentin"}' -H "Content-Type: application/json" -X POST https://uzh2umacxh.execute-api.us-east-1.amazonaws.com/default/Tesst1
     servercode=200
     servermessage='Standard OK reply'
     challenge=''
-    #messagetype=1
-    #messagebody='I don\'t understand this!'
 
-    #Slack app key and client
     SlackKey = os.environ.get('SlackKey')
     client = WebClient(token=SlackKey)
     SheetID = os.environ.get('SheetID')
 
     print(event)
-    #print(context)
-    menuoption=0
 
+    menuoption=0
     eventbody= False
 
     if 'body' in event:
       eventbody=event['body']
-
       if event['isBase64Encoded']== True:
         event_dec=parse_qs(base64.b64decode(eventbody).decode('utf-8'))
         #if event_dec[:5]=='token':
@@ -89,7 +74,6 @@ def lambda_handler(event, context):
                   menuoption=5
       else:
         body_dic=json.loads(event['body'])
-
       #With body in readable format, check for last options before going to menu
       if 'type' in body_dic:
         if body_dic['type']=='valentin':
@@ -101,30 +85,10 @@ def lambda_handler(event, context):
         elif body_dic['type']=='event_callback':
           menuoption=7
 
-
-    # Menu options
-    # ------------
-    # 0 - Default, fallback if all else fails
-    # 1 - Send survey to list of receivers (Valentin in payload) (Test post trigger from terminal (Valentin type))
-    # 2 - URL Challenge from slack
-    # 3 - Slash command: test
-    # 4 - Button Click
-    # 5 - Process Modal Submission
-    # 6 - Update contact list
-    # 7 - App Home Opened
-    # 8 - React to App Home submission
-
-    # Message Types
-    #---------------
-    # 1 - Pure text
-    # 2 - Click buttons
-    # 3 - Modal test
-
     #Default
     if menuoption==0:
         messagebody='No body in POST bro, or it\'s not a json who knows'
         messagetype=1
-        #response = client.chat_postMessage(channel=testusers[0][1],blocks=generate_message(messagebody,messagetype,''))
 
     #Send survey to list of receivers (Valentin in payload)
     elif menuoption==1:
@@ -157,27 +121,13 @@ def lambda_handler(event, context):
                 except Exception as e:
                     pass
 
-            #response = client.chat_postMessage(channel=testusers[0][1],blocks=generate_message(messagebody,messagetype))
-        #does this work at all? it seems like nah
-        #requests.post(event['url'],{'statusCode': 200,'body': servermessage})
-
     #Slack challenge
     elif menuoption==2:
         messagebody='Trying to answer the challenge bro'
         messagetype=1
-        #response = client.chat_postMessage(channel=testusers[0][1],blocks=generate_message(messagebody,messagetype,''))
-        #elif menuoption==3:
-        #  messagetype=3
         challenge=body_dic['challenge']
     #Slash
     elif menuoption==3:
-        #requests.post(event['url'],{'statusCode': 200,'body': servermessage}
-
-        # gc = gspread.authorize(credentials)
-        # sh = gc.open_by_key('1nyQc1zzoGlY0ZSpxGGA89dLibhVrkLI0ut3ry9AJkQk')
-        # sheetlist = sh.worksheets()
-        # wk=sh.worksheet(sheetlist[0].title)
-        # wk.update('H1', "it's down there somewhere, let me take another look.")
         messagebody='cool slash command bro'
         messagetype=1
         slashchannel=event_dec["user_id"][0]
@@ -206,10 +156,7 @@ def lambda_handler(event, context):
         gc = gspread.authorize(credentials)
         sh = gc.open_by_key(SheetID)
         Responses=sh.worksheet("[Backend] Responses")
-        #sheetlist = sh.worksheets()
-        #wk=sh.worksheet(sheetlist[0].title)
 
-        #messagebody='How about we ask you something else... after this message from our sponsors!'
         messagetype=1
 
         row = [id, username, name, time, selection]
@@ -222,19 +169,16 @@ def lambda_handler(event, context):
         name=body_dic['user']['name']
         userid=body_dic['user']['id']
         print(body_dic)
+
         #[Backend] Feedback Responses
         gc = gspread.authorize(credentials)
         sh = gc.open_by_key(SheetID)
         Responses=sh.worksheet("[Backend] Feedback Responses")
         row = [block_id,userid, name, resp]
         Responses.append_row(row)
-        #servermessage={}
-        #servercode=200
 
     #Update Slack contact list
     elif menuoption==6:
-        #response = client.users_list()
-        #users = response["members"]
         users = []
         for page in client.users_list(limit=1000):
             users = users + page['members']
@@ -252,7 +196,6 @@ def lambda_handler(event, context):
 
     #React to App Home submission
     elif menuoption==8:
-        #block_id=body_dic['view']['blocks'][0]['block_id']
         userid=body_dic['user']['id']
         client.views_publish(user_id=userid,view=generate_message('',5,''))
         resp=body_dic['view']['state']['values'][list(body_dic['view']['state']['values'].keys())[0]]['plain_text_input-action']['value']
@@ -265,8 +208,6 @@ def lambda_handler(event, context):
         Responses.append_row(row)
 
     #Send test response to Slack
-
-    #print('antes del fin')
     returnobject={
         "statusCode": 200,
         #'body': servermessage
@@ -277,17 +218,7 @@ def lambda_handler(event, context):
         "response_action": "clear",
         "challenge":challenge
     }
-    #print(returnobject)
     return returnobject
-    # {
-    #     "statusCode": 200,
-    #     #'body': servermessage
-    #     "headers": {
-    #         "Content-Type": "application/json"
-    #     },
-    #     "body": "",
-    #     "response_action": "clear"
-    # }
 
 
 
@@ -452,14 +383,14 @@ def generate_message(messagebody,messagetype,Hash):
         			"type": "header",
         			"text": {
         				"type": "plain_text",
-        				"text": "EP Suggestion Box",
+        				"text": "Suggestion Box",
         				"emoji": True
         			}
         		},
         		{
         			"hint": {
         				"type": "plain_text",
-        				"text": "Eg: Feedback on E&P material such as FBP Calls, Onboarding Foundations, Lyearn courses, Fortis, Sales Huddles, Data reporting, In The Loop newsletter, etc",
+        				"text": "Eg: insert examples here",
         				"emoji": True
         			},
         			"type": "input",
