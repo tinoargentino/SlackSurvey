@@ -3,7 +3,7 @@ Sends a Slack NPS Survey to a list of users
 
 The Survey includes 10 buttons from 1 to 10 to provide a full NPS survey, and asks for additional text feedback after the score is provided.
 
-Additionally, the Home of the Slack App provided a text input interface, so that users can provide valuable feedback at any moment
+Additionally, the Home of the Slack App provides a text input interface, so that users can provide valuable feedback at any moment
 
 All of this data is captured, stored, and organized in the Google Spreadsheet template provided
 
@@ -13,7 +13,16 @@ Spreadsheet: https://docs.google.com/spreadsheets/d/16aptHEARz_1HCL1pJ_Rx6uW-oTB
 
 The Spreadsheet includes a script that is to be set to run periodically so that it always has the latest list of Slack User IDs to match to the emails.
 
-The Spreadheet matches user emails to their Slack IDs in order to send them the survey
+The Spreadsheet matches user emails to their Slack IDs in order to send them the survey
+
+You will need to create a Slack App in order to send the actual survey's
+
+Spreadsheet <------> AWS Lambda <------> Slack <------> Slack Users
+
+The Spreadsheet triggers requests from the AWS Lambda via get requests, and the AWS Lambda interfaces with Slack via the API
+
+The AWS Lambda script access the Spreadsheet via Gspread, which allows it to read (Slack User IDs) and write data (Survey responses)
+
 
 # Customization
 You can create your own Modals and Slack interactions here: https://app.slack.com/block-kit-builder/
