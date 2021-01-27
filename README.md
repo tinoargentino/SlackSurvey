@@ -1,6 +1,9 @@
-# SlackSurvey
+# Slack Survey for AWS Lambda
 Sends a Slack Survey to a list of users
+
 The user list comes from the provided G-Sheet and the results are also dumped there
+
+The Script is intended to be hosted in AWS Lambda
 
 Spreadsheet: https://docs.google.com/spreadsheets/d/16aptHEARz_1HCL1pJ_Rx6uW-oTBLSpOFtfIlgJrSXwI/edit?usp=sharing
 
@@ -48,4 +51,3 @@ You will have to set up 2 environment variables in AWS Lambda console:
  2 - Click buttons
 
  3 - Modal test
- 
