@@ -1,13 +1,19 @@
 # Slack Survey for AWS Lambda
-Sends a Slack Survey to a list of users
+Sends a Slack NPS Survey to a list of users
 
-The user list comes from the provided G-Sheet and the results are also dumped there
+The Survey includes 10 buttons from 1 to 10 to provide a full NPS survey, and asks for additional text feedback after the score is provided.
 
-The Script is intended to be hosted in AWS Lambda
+Additionally, the Home of the Slack App provided a text input interface, so that users can provide valuable feedback at any moment
+
+All of this data is captured, stored, and organized in the Google Spreadsheet template provided
+
+The Script is intended to be hosted in AWS Lambda, and triggered from the spreadsheet once the contact list has been entered
 
 Spreadsheet: https://docs.google.com/spreadsheets/d/16aptHEARz_1HCL1pJ_Rx6uW-oTBLSpOFtfIlgJrSXwI/edit?usp=sharing
 
 The Spreadsheet includes a script that is to be set to run periodically so that it always has the latest list of Slack User IDs to match to the emails.
+
+The Spreadheet matches user emails to their Slack IDs in order to send them the survey
 
 # Customization
 You can create your own Modals and Slack interactions here: https://app.slack.com/block-kit-builder/
